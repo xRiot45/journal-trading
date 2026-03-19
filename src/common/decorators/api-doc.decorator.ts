@@ -5,6 +5,7 @@ import {
     ApiBearerAuth,
     ApiBody,
     ApiConsumes,
+    ApiExtraModels,
     ApiHeader,
     ApiHeaderOptions,
     ApiOperation,
@@ -15,7 +16,9 @@ import {
     ApiQueryOptions,
     ApiResponse,
     ApiResponseOptions,
+    getSchemaPath,
 } from '@nestjs/swagger';
+import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
 
 export interface ApiDocErrorResponse {
     status: HttpStatus;
@@ -115,12 +118,29 @@ export function ApiDocGenericResponse(options: ApiDocOptions): MethodDecorator {
 
     // 6. Success Response
     if (response) {
+        decorators.push(ApiExtraModels(BaseResponseDto, response as Type<unknown>));
+
         decorators.push(
             ApiResponse({
                 status: status,
                 description: 'Operation successful',
-                type: response as Type<unknown>,
-                isArray: isArray,
+                schema: {
+                    allOf: [
+                        { $ref: getSchemaPath(BaseResponseDto) },
+                        {
+                            properties: {
+                                data: isArray
+                                    ? {
+                                          type: 'array',
+                                          items: { $ref: getSchemaPath(response as Type<unknown>) },
+                                      }
+                                    : {
+                                          $ref: getSchemaPath(response as Type<unknown>),
+                                      },
+                            },
+                        },
+                    ],
+                },
             }),
         );
     } else {

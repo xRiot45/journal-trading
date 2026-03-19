@@ -7,6 +7,7 @@ export class PairEntity extends BaseEntity {
         type: 'varchar',
         length: 100,
         nullable: false,
+        unique: true,
     })
     name: string;
 
