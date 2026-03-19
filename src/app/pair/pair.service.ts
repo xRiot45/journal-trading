@@ -1,11 +1,15 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PairEntity } from './entities/pair.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsOrder, ILike, Repository } from 'typeorm';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { PairDto } from './dto/req/pair-request.dto';
 import { PairResponseDto } from './dto/res/pair-response.dto';
 import { mapToDto } from 'src/shared/utils/transformer.util';
+import { PaginationQueryDto } from 'src/shared/dto/pagination.dto';
+import { PaginationResponse } from 'src/shared/interfaces/pagination.interface';
+import { paginate } from 'src/shared/utils/pagination.util';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class PairService {
@@ -39,6 +43,33 @@ export class PairService {
             const errorStack = error instanceof Error ? error.stack : undefined;
 
             this.logger.error(`Error creating pair: ${errorMessage}`, context, errorStack);
+            throw error;
+        }
+    }
+
+    async findAll(query: PaginationQueryDto): Promise<PaginationResponse<PairResponseDto>> {
+        const context = `${PairService.name}.findAll`;
+        try {
+            const allowedSortFields = ['name', 'createdAt', 'updatedAt'];
+            const sortBy = allowedSortFields.includes(query.sortBy ?? '') ? (query.sortBy ?? '') : 'createdAt';
+
+            const whereCondition = query?.search ? { name: ILike(`%${query.search}%`) } : {};
+
+            const result = await paginate(this.pairRepository, query, {
+                where: whereCondition,
+                order: { [sortBy]: query.order ?? 'ASC' } as FindOptionsOrder<PairEntity>,
+            });
+
+            return {
+                data: plainToInstance(PairResponseDto, result.data, {
+                    excludeExtraneousValues: true,
+                }),
+                meta: result.meta,
+            };
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error(`Error fetching pairs: ${errorMessage}`, context, errorStack);
             throw error;
         }
     }

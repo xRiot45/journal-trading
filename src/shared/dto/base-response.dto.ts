@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
+import { PaginationMetaDto } from './pagination.dto';
 
 export class BaseResponseDto<T = void> {
     @Expose()
@@ -22,4 +23,8 @@ export class BaseResponseDto<T = void> {
     @Expose()
     @ApiPropertyOptional()
     data?: T;
+
+    @Expose()
+    @ApiPropertyOptional()
+    meta?: PaginationMetaDto;
 }

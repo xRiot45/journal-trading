@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import { PairService } from './pair.service';
 import { PairDto } from './dto/req/pair-request.dto';
 import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
@@ -6,6 +6,7 @@ import { PairResponseDto } from './dto/res/pair-response.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { ApiDocGenericResponse } from 'src/common/decorators/api-doc.decorator';
+import { PaginationQueryDto } from 'src/shared/dto/pagination.dto';
 
 @ApiTags('Pair')
 @UseGuards(JwtAuthGuard)
@@ -47,6 +48,28 @@ export class PairController {
             timestamp: new Date(),
             message: 'Pair created successfully',
             data: result,
+        };
+    }
+
+    @Get()
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Get all pairs',
+        description: 'Get all pairs',
+        auth: true,
+        response: PairResponseDto,
+        status: HttpStatus.OK,
+        produces: 'application/json',
+    })
+    async findAll(@Query() query: PaginationQueryDto): Promise<BaseResponseDto<PairResponseDto[]>> {
+        const result = await this.pairService.findAll(query);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Pairs fetched successfully',
+            data: result.data,
+            meta: result.meta,
         };
     }
 }

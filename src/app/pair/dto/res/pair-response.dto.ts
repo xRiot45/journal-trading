@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
 export class PairResponseDto {
@@ -10,7 +10,7 @@ export class PairResponseDto {
     @Expose()
     name: string;
 
-    @ApiProperty({ example: 'Gold vs USD', description: 'The description of the currency pair' })
+    @ApiPropertyOptional({ example: 'Gold vs USD', description: 'The description of the currency pair' })
     @Expose()
     description: string;
 
