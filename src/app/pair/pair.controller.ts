@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Patch,
+    Post,
+    Query,
+    UseGuards,
+} from '@nestjs/common';
 import { PairService } from './pair.service';
 import { PairDto } from './dto/req/pair-request.dto';
 import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
@@ -114,6 +126,26 @@ export class PairController {
             timestamp: new Date(),
             message: 'Pair updated successfully',
             data: result,
+        };
+    }
+
+    @Delete(':id')
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Delete pair by id',
+        description: 'Delete pair by id',
+        auth: true,
+        response: BaseResponseDto,
+        status: HttpStatus.OK,
+        produces: 'application/json',
+    })
+    async remove(@Param('id') id: string): Promise<BaseResponseDto> {
+        await this.pairService.remove(id);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Pair deleted successfully',
         };
     }
 }

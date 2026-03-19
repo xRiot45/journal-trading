@@ -128,4 +128,25 @@ export class PairService {
             throw error;
         }
     }
+
+    async remove(id: string): Promise<void> {
+        const context = `${PairService.name}.remove`;
+        try {
+            const pair = await this.pairRepository.findOne({
+                where: { id },
+            });
+
+            if (!pair) {
+                this.logger.warn(`Pair with id ${id} not found`, context);
+                throw new NotFoundException(`Pair with id ${id} not found`);
+            }
+
+            await this.pairRepository.remove(pair);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error(`Error deleting pair: ${errorMessage}`, context, errorStack);
+            throw error;
+        }
+    }
 }
