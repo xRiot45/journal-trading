@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { PairService } from './pair.service';
 import { PairDto } from './dto/req/pair-request.dto';
 import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
@@ -92,6 +92,27 @@ export class PairController {
             statusCode: HttpStatus.OK,
             timestamp: new Date(),
             message: 'Pair fetched successfully',
+            data: result,
+        };
+    }
+
+    @Patch(':id')
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Update pair by id',
+        description: 'Update pair by id',
+        auth: true,
+        response: PairResponseDto,
+        status: HttpStatus.OK,
+        produces: 'application/json',
+    })
+    async update(@Param('id') id: string, @Body() dto: PairDto): Promise<BaseResponseDto<PairResponseDto>> {
+        const result = await this.pairService.update(id, dto);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Pair updated successfully',
             data: result,
         };
     }

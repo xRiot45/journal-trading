@@ -94,4 +94,38 @@ export class PairService {
             throw error;
         }
     }
+
+    async update(id: string, dto: PairDto): Promise<PairResponseDto> {
+        const context = `${PairService.name}.update`;
+        try {
+            const pair = await this.pairRepository.findOne({
+                where: { id },
+            });
+
+            if (!pair) {
+                this.logger.warn(`Pair with id ${id} not found`, context);
+                throw new NotFoundException(`Pair with id ${id} not found`);
+            }
+
+            const existingPair = await this.pairRepository.findOne({
+                where: { name: dto.name },
+            });
+
+            if (existingPair && existingPair.id !== id) {
+                this.logger.warn(`Pair with name ${dto.name} already exists`, context);
+                throw new ConflictException(`Pair with name ${dto.name} already exists`);
+            }
+
+            pair.name = dto.name;
+            pair.description = dto.description;
+
+            const result = await this.pairRepository.save(pair);
+            return mapToDto(PairResponseDto, result);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error(`Error updating pair: ${errorMessage}`, context, errorStack);
+            throw error;
+        }
+    }
 }
