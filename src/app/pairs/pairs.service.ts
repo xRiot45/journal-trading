@@ -12,7 +12,7 @@ import { paginate } from 'src/shared/utils/pagination.util';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
-export class PairService {
+export class PairsService {
     constructor(
         @InjectRepository(PairEntity)
         private readonly pairRepository: Repository<PairEntity>,
@@ -20,7 +20,7 @@ export class PairService {
     ) {}
 
     async create(dto: PairDto): Promise<PairResponseDto> {
-        const context = `${PairService.name}.create`;
+        const context = `${PairsService.name}.create`;
         const { name, description } = dto;
 
         try {
@@ -48,7 +48,7 @@ export class PairService {
     }
 
     async findAll(query: PaginationQueryDto): Promise<PaginationResponse<PairResponseDto>> {
-        const context = `${PairService.name}.findAll`;
+        const context = `${PairsService.name}.findAll`;
         try {
             const allowedSortFields = ['name', 'createdAt', 'updatedAt'];
             const sortBy = allowedSortFields.includes(query.sortBy ?? '') ? (query.sortBy ?? '') : 'createdAt';
@@ -75,7 +75,7 @@ export class PairService {
     }
 
     async findOne(id: string): Promise<PairResponseDto> {
-        const context = `${PairService.name}.findOne`;
+        const context = `${PairsService.name}.findOne`;
         try {
             const pair = await this.pairRepository.findOne({
                 where: { id },
@@ -96,7 +96,7 @@ export class PairService {
     }
 
     async update(id: string, dto: PairDto): Promise<PairResponseDto> {
-        const context = `${PairService.name}.update`;
+        const context = `${PairsService.name}.update`;
         try {
             const pair = await this.pairRepository.findOne({
                 where: { id },
@@ -130,7 +130,7 @@ export class PairService {
     }
 
     async remove(id: string): Promise<void> {
-        const context = `${PairService.name}.remove`;
+        const context = `${PairsService.name}.remove`;
         try {
             const pair = await this.pairRepository.findOne({
                 where: { id },

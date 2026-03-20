@@ -11,7 +11,7 @@ import {
     Query,
     UseGuards,
 } from '@nestjs/common';
-import { PairService } from './pair.service';
+import { PairsService } from './pairs.service';
 import { PairDto } from './dto/req/pair-request.dto';
 import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
 import { PairResponseDto } from './dto/res/pair-response.dto';
@@ -24,7 +24,7 @@ import { PaginationMetaDto, PaginationQueryDto } from 'src/shared/dto/pagination
 @UseGuards(JwtAuthGuard)
 @Controller('pair')
 export class PairController {
-    constructor(private readonly pairService: PairService) {}
+    constructor(private readonly pairsService: PairsService) {}
 
     @Post()
     @HttpCode(HttpStatus.CREATED)
@@ -53,7 +53,7 @@ export class PairController {
         ],
     })
     async create(@Body() dto: PairDto): Promise<BaseResponseDto<PairResponseDto>> {
-        const result = await this.pairService.create(dto);
+        const result = await this.pairsService.create(dto);
         return {
             success: true,
             statusCode: HttpStatus.CREATED,
@@ -76,7 +76,7 @@ export class PairController {
         produces: 'application/json',
     })
     async findAll(@Query() query: PaginationQueryDto): Promise<BaseResponseDto<PairResponseDto[]>> {
-        const result = await this.pairService.findAll(query);
+        const result = await this.pairsService.findAll(query);
         return {
             success: true,
             statusCode: HttpStatus.OK,
@@ -98,7 +98,7 @@ export class PairController {
         produces: 'application/json',
     })
     async findOne(@Param('id') id: string): Promise<BaseResponseDto<PairResponseDto>> {
-        const result = await this.pairService.findOne(id);
+        const result = await this.pairsService.findOne(id);
         return {
             success: true,
             statusCode: HttpStatus.OK,
@@ -119,7 +119,7 @@ export class PairController {
         produces: 'application/json',
     })
     async update(@Param('id') id: string, @Body() dto: PairDto): Promise<BaseResponseDto<PairResponseDto>> {
-        const result = await this.pairService.update(id, dto);
+        const result = await this.pairsService.update(id, dto);
         return {
             success: true,
             statusCode: HttpStatus.OK,
@@ -140,7 +140,7 @@ export class PairController {
         produces: 'application/json',
     })
     async remove(@Param('id') id: string): Promise<BaseResponseDto> {
-        await this.pairService.remove(id);
+        await this.pairsService.remove(id);
         return {
             success: true,
             statusCode: HttpStatus.OK,
