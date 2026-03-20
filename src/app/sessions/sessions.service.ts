@@ -108,4 +108,40 @@ export class SessionsService {
             throw error;
         }
     }
+
+    async update(sessionId: string, dto: SessionDto): Promise<SessionResponseDto> {
+        const context = `${SessionsService.name}.update`;
+        try {
+            const session = await this.sessionRepository.findOne({
+                where: { id: sessionId },
+            });
+
+            if (!session) {
+                this.logger.warn(`Session with id ${sessionId} not found`, context);
+                throw new NotFoundException(`Session with id ${sessionId} not found`);
+            }
+
+            const existingSession = await this.sessionRepository.findOne({
+                where: { name: dto.name },
+            });
+
+            if (existingSession && existingSession.id !== sessionId) {
+                this.logger.warn(`Session with name ${dto.name} already exists`, context);
+                throw new ConflictException(`Session with name ${dto.name} already exists`);
+            }
+
+            session.name = dto.name;
+            session.startTime = dto.startTime;
+            session.endTime = dto.endTime;
+
+            const result = await this.sessionRepository.save(session);
+
+            return mapToDto(SessionResponseDto, result);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error(`Error updating session: ${errorMessage}`, context, errorStack);
+            throw error;
+        }
+    }
 }

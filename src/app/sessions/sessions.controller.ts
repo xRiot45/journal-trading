@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { ApiTags } from '@nestjs/swagger';
 import { SessionDto } from './dto/req/session-request.dto';
@@ -78,6 +78,30 @@ export class SessionsController {
             statusCode: HttpStatus.OK,
             timestamp: new Date(),
             message: 'Session fetched successfully',
+            data: result,
+        };
+    }
+
+    @Patch(':sessionId')
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Update a Session by ID',
+        description: 'Update a Session by ID',
+        auth: true,
+        response: SessionResponseDto,
+        status: HttpStatus.OK,
+        produces: 'application/json',
+    })
+    async update(
+        @Param('sessionId') sessionId: string,
+        @Body() dto: SessionDto,
+    ): Promise<BaseResponseDto<SessionResponseDto>> {
+        const result = await this.sessionsService.update(sessionId, dto);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Session updated successfully',
             data: result,
         };
     }
