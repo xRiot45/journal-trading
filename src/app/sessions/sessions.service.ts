@@ -1,11 +1,15 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SessionEntity } from './entities/session.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsOrder, ILike, Repository } from 'typeorm';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { SessionDto } from './dto/req/session-request.dto';
 import { SessionResponseDto } from './dto/res/session-response.dto';
 import { mapToDto } from 'src/shared/utils/transformer.util';
+import { PaginationQueryDto } from 'src/shared/dto/pagination.dto';
+import { plainToInstance } from 'class-transformer';
+import { paginate } from 'src/shared/utils/pagination.util';
+import { PaginationResponse } from 'src/shared/interfaces/pagination.interface';
 
 @Injectable()
 export class SessionsService {
@@ -47,6 +51,38 @@ export class SessionsService {
             const errorStack = error instanceof Error ? error.stack : undefined;
 
             this.logger.error(`Error creating session: ${errorMessage}`, context, errorStack);
+            throw error;
+        }
+    }
+
+    async findAll(query: PaginationQueryDto): Promise<PaginationResponse<SessionResponseDto>> {
+        const context = `${SessionsService.name}.findAll`;
+
+        try {
+            const allowedSortFields = ['name', 'startTime', 'endTime', 'createdAt', 'updatedAt'];
+            const sortByInput = query.sortBy;
+            const sortBy = sortByInput && allowedSortFields.includes(sortByInput) ? sortByInput : 'createdAt';
+            const order = query.order === 'DESC' ? 'DESC' : 'ASC';
+            const search = query.search?.trim();
+
+            const whereCondition = search ? { name: ILike(`%${search}%`) } : {};
+
+            const result = await paginate(this.sessionRepository, query, {
+                where: whereCondition,
+                order: { [sortBy]: order } as FindOptionsOrder<SessionEntity>,
+            });
+
+            return {
+                data: plainToInstance(SessionResponseDto, result.data, {
+                    excludeExtraneousValues: true,
+                }),
+                meta: result.meta,
+            };
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+
+            this.logger.error(`Error fetching sessions: ${errorMessage}`, context, errorStack);
             throw error;
         }
     }
