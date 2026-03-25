@@ -42,4 +42,11 @@ export class UserResponseDto {
     })
     @Expose()
     createdAt: Date;
+
+    @ApiProperty({
+        example: '2026-01-01T10:00:00.000Z',
+        description: 'Account update timestamp',
+    })
+    @Expose()
+    updatedAt: Date;
 }
