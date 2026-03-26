@@ -30,6 +30,7 @@ export class PaginationQueryDto {
     @ApiPropertyOptional({ example: 'ASC', enum: ['ASC', 'DESC'], default: 'ASC' })
     @Expose()
     @IsOptional()
+    @Transform(({ value }: { value: string }) => value?.toUpperCase())
     @IsIn(['ASC', 'DESC'])
     order?: 'ASC' | 'DESC' = 'ASC';
 
