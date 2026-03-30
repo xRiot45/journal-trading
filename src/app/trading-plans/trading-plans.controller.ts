@@ -1,4 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Post,
+    UploadedFile,
+    UseGuards,
+    UseInterceptors,
+} from '@nestjs/common';
 import { TradingPlansService } from './trading-plans.service';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -46,6 +57,26 @@ export class TradingPlansController {
             statusCode: HttpStatus.CREATED,
             timestamp: new Date(),
             message: 'Trading plan created successfully',
+            data: result,
+        };
+    }
+
+    @Get(':tradingPlanId')
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Get a trading plan by ID',
+        description: 'Retrieve a trading plan by its ID',
+        auth: true,
+        response: TradingPlanResponseDto,
+        status: HttpStatus.OK,
+    })
+    async findOne(@Param('tradingPlanId') tradingPlanId: string): Promise<BaseResponseDto<TradingPlanResponseDto>> {
+        const result = await this.tradingPlansService.findOne(tradingPlanId);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Trading plan retrieved successfully',
             data: result,
         };
     }

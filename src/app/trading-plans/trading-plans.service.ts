@@ -67,4 +67,29 @@ export class TradingPlansService {
             throw new InternalServerErrorException('Failed to create trading plan');
         }
     }
+
+    async findOne(tradingPlanId: string): Promise<TradingPlanResponseDto> {
+        const context = `${TradingPlansService.name}.findOne`;
+
+        try {
+            const tradingPlan = await this.tradingPlanRepository.findOne({
+                where: { id: tradingPlanId },
+                relations: ['pair'],
+            });
+
+            if (!tradingPlan) {
+                this.logger.warn(`Trading plan with id ${tradingPlanId} not found`, context);
+                throw new NotFoundException(`Trading plan with id ${tradingPlanId} not found`);
+            }
+
+            return mapToDto(TradingPlanResponseDto, tradingPlan);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+
+            this.logger.error(`Error retrieving trading plan: ${errorMessage}`, context, errorStack);
+
+            throw new InternalServerErrorException('Failed to retrieve trading plan');
+        }
+    }
 }
