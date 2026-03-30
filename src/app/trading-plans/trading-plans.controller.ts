@@ -61,6 +61,26 @@ export class TradingPlansController {
         };
     }
 
+    @Get()
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Get all trading plans',
+        description: 'Retrieve a list of all trading plans',
+        auth: true,
+        response: [TradingPlanResponseDto],
+        status: HttpStatus.OK,
+    })
+    async findAll(): Promise<BaseResponseDto<TradingPlanResponseDto[]>> {
+        const result = await this.tradingPlansService.findAll();
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Trading plans retrieved successfully',
+            data: result,
+        };
+    }
+
     @Get(':tradingPlanId')
     @HttpCode(HttpStatus.OK)
     @ApiDocGenericResponse({

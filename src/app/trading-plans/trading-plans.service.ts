@@ -68,6 +68,25 @@ export class TradingPlansService {
         }
     }
 
+    async findAll(): Promise<TradingPlanResponseDto[]> {
+        const context = `${TradingPlansService.name}.findAll`;
+
+        try {
+            const tradingPlans = await this.tradingPlanRepository.find({
+                relations: ['pair'],
+            });
+
+            return tradingPlans.map(plan => mapToDto(TradingPlanResponseDto, plan));
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+
+            this.logger.error(`Error retrieving trading plans: ${errorMessage}`, context, errorStack);
+
+            throw new InternalServerErrorException('Failed to retrieve trading plans');
+        }
+    }
+
     async findOne(tradingPlanId: string): Promise<TradingPlanResponseDto> {
         const context = `${TradingPlansService.name}.findOne`;
 
