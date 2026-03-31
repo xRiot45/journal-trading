@@ -1,6 +1,7 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     HttpCode,
     HttpStatus,
@@ -135,6 +136,24 @@ export class TradingPlansController {
             timestamp: new Date(),
             message: 'Trading plan updated successfully',
             data: result,
+        };
+    }
+
+    @Delete(':tradingPlanId')
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Delete a trading plan',
+        description: 'Delete an existing trading plan by its ID',
+        auth: true,
+        status: HttpStatus.OK,
+    })
+    async remove(@Param('tradingPlanId') tradingPlanId: string): Promise<BaseResponseDto> {
+        await this.tradingPlansService.remove(tradingPlanId);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Trading plan deleted successfully',
         };
     }
 }

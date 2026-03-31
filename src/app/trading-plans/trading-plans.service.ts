@@ -182,4 +182,32 @@ export class TradingPlansService {
             throw new InternalServerErrorException('Failed to update trading plan');
         }
     }
+
+    async remove(tradingPlanId: string): Promise<void> {
+        const context = `${TradingPlansService.name}.remove`;
+
+        try {
+            const tradingPlan = await this.tradingPlanRepository.findOne({
+                where: { id: tradingPlanId },
+            });
+
+            if (!tradingPlan) {
+                this.logger.warn(`Trading plan with id ${tradingPlanId} not found`, context);
+                throw new NotFoundException(`Trading plan with id ${tradingPlanId} not found`);
+            }
+
+            if (tradingPlan.thumbnailUrl) {
+                await deleteFile(tradingPlan.thumbnailUrl);
+            }
+
+            await this.tradingPlanRepository.delete(tradingPlanId);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+
+            this.logger.error(`Error deleting trading plan: ${errorMessage}`, context, errorStack);
+
+            throw new InternalServerErrorException('Failed to delete trading plan');
+        }
+    }
 }
