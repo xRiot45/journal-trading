@@ -6,6 +6,7 @@ import { SessionsModule } from './sessions/sessions.module';
 import { ElementsModule } from './elements/elements.module';
 import { TradingPlansModule } from './trading-plans/trading-plans.module';
 import { StrategiesModule } from './strategies/strategies.module';
+import { JournalsModule } from './journals/journals.module';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { StrategiesModule } from './strategies/strategies.module';
         StrategiesModule,
         ElementsModule,
         TradingPlansModule,
+        JournalsModule,
     ],
     exports: [],
     controllers: [],

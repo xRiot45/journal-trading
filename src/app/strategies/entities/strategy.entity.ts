@@ -1,8 +1,9 @@
 import { BaseEntity } from 'src/shared/entities/base.entity';
 import { Entity, Column, OneToMany } from 'typeorm';
 import { ElementEntity } from 'src/app/elements/entities/element.entity';
+import { JournalEntity } from 'src/app/journals/entities/journal.entity';
 
-@Entity('documents')
+@Entity('strategies')
 export class StrategyEntity extends BaseEntity {
     @Column({
         type: 'varchar',
@@ -30,6 +31,11 @@ export class StrategyEntity extends BaseEntity {
     })
     lastEditedAt: Date;
 
+    // ---- Relationship ----
+
     @OneToMany(() => ElementEntity, e => e.strategy)
     elements: ElementEntity[];
+
+    @OneToMany(() => JournalEntity, journal => journal.strategy)
+    journals: JournalEntity[];
 }

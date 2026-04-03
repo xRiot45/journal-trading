@@ -1,3 +1,4 @@
+import { JournalEntity } from 'src/app/journals/entities/journal.entity';
 import { TradingPlanEntity } from 'src/app/trading-plans/entities/trading-plan.entity';
 import { BaseEntity } from 'src/shared/entities/base.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
@@ -23,4 +24,7 @@ export class PairEntity extends BaseEntity {
 
     @OneToMany(() => TradingPlanEntity, tradingPlan => tradingPlan.pair)
     tradingPlans: TradingPlanEntity[];
+
+    @OneToMany(() => JournalEntity, journal => journal.pair)
+    journals: JournalEntity[];
 }
