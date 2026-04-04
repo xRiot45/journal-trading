@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TradeDirection } from '../../common/enum/trade-direction.enum';
 import { BasedOnPlan } from '../../common/enum/based-on-plan.enum';
 import { TradeStatus } from '../../common/enum/trade-status.enum';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { PairResponseDto } from 'src/app/pairs/dto/res/pair-response.dto';
 import { StrategiesResponseDto } from 'src/app/strategies/dto/res/strategies-response.dto';
 
@@ -80,6 +80,7 @@ export class JournalResponseDto {
 
     @ApiProperty({ description: 'Pair associated with this trade', example: PairResponseDto })
     @Expose()
+    @Type(() => PairResponseDto)
     pair: PairResponseDto;
 
     @ApiPropertyOptional({
@@ -88,6 +89,7 @@ export class JournalResponseDto {
         nullable: true,
     })
     @Expose()
+    @Type(() => StrategiesResponseDto)
     strategy: StrategiesResponseDto;
 
     @ApiProperty({ description: 'Record creation timestamp', example: '2025-01-15T08:30:00.000Z' })

@@ -127,7 +127,7 @@ export class JournalEntity extends BaseEntity {
     })
     pairId: string;
 
-    @ManyToOne(() => PairEntity, { eager: false, onDelete: 'RESTRICT' })
+    @ManyToOne(() => PairEntity, { eager: true, onDelete: 'RESTRICT' })
     @JoinColumn({ name: 'pairId' })
     pair: PairEntity;
 
@@ -137,7 +137,7 @@ export class JournalEntity extends BaseEntity {
     })
     strategyId: string;
 
-    @ManyToOne(() => StrategyEntity, { eager: false, onDelete: 'RESTRICT' })
+    @ManyToOne(() => StrategyEntity, { eager: true, onDelete: 'RESTRICT' })
     @JoinColumn({ name: 'strategyId' })
     strategy: StrategyEntity;
 }

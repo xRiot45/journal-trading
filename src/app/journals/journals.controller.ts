@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } from '@nestjs/common';
 import { JournalsService } from './journals.service';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -6,6 +6,7 @@ import { CreateJournalRequestDto } from './dto/req/journal-request.dto';
 import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
 import { JournalResponseDto } from './dto/res/journal-response.dto';
 import { ApiDocGenericResponse } from 'src/common/decorators/api-doc.decorator';
+import { PaginationQueryDto } from 'src/shared/dto/pagination.dto';
 
 @ApiTags('Journals')
 @UseGuards(JwtAuthGuard)
@@ -33,6 +34,28 @@ export class JournalsController {
             timestamp: new Date(),
             message: 'Journal created successfully',
             data: result,
+        };
+    }
+
+    @Get()
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Get Journals',
+        description: 'Get Journals',
+        auth: true,
+        response: JournalResponseDto,
+        status: HttpStatus.OK,
+        produces: 'application/json',
+    })
+    async findAll(@Query() query: PaginationQueryDto): Promise<BaseResponseDto<JournalResponseDto[]>> {
+        const result = await this.journalsService.findAll(query);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Journals fetched successfully',
+            data: result.data,
+            meta: result.meta,
         };
     }
 }
