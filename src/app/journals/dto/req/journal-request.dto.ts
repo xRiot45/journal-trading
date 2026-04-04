@@ -1,7 +1,7 @@
 // journal.dto.ts
 
 import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { TradeDirection } from '../../common/enum/trade-direction.enum';
 import { TradeStatus } from '../../common/enum/trade-status.enum';
@@ -77,9 +77,8 @@ export class JournalRequestDto {
         type: Number,
         nullable: true,
     })
-    @IsOptional()
     @IsNumber()
-    closingPrice?: number | null;
+    closingPrice: number;
 
     @ApiPropertyOptional({
         description: 'Time when the trade was closed (HH:mm:ss)',
@@ -87,9 +86,8 @@ export class JournalRequestDto {
         type: String,
         nullable: true,
     })
-    @IsOptional()
     @IsString()
-    closingTime?: string | null;
+    closingTime: string;
 
     // ---- TP & SL ----
     @ApiPropertyOptional({
@@ -98,9 +96,8 @@ export class JournalRequestDto {
         type: Number,
         nullable: true,
     })
-    @IsOptional()
     @IsNumber()
-    takeProfit?: number | null;
+    takeProfit: number;
 
     @ApiPropertyOptional({
         description: 'Stop Loss level',
@@ -108,9 +105,8 @@ export class JournalRequestDto {
         type: Number,
         nullable: true,
     })
-    @IsOptional()
     @IsNumber()
-    stopLoss?: number | null;
+    stopLoss: number;
 
     // ---- PnL ----
     @ApiPropertyOptional({
@@ -119,9 +115,8 @@ export class JournalRequestDto {
         type: Number,
         nullable: true,
     })
-    @IsOptional()
     @IsNumber()
-    profitAndLoss?: number | null;
+    profitAndLoss: number;
 
     // ---- Risk & Reward Ratio ----
     @ApiPropertyOptional({
@@ -130,9 +125,8 @@ export class JournalRequestDto {
         type: Number,
         nullable: true,
     })
-    @IsOptional()
     @IsNumber()
-    riskRatio?: number | null;
+    riskRatio: number;
 
     @ApiPropertyOptional({
         description: 'Reward ratio of the trade',
@@ -140,9 +134,8 @@ export class JournalRequestDto {
         type: Number,
         nullable: true,
     })
-    @IsOptional()
     @IsNumber()
-    rewardRatio?: number | null;
+    rewardRatio: number;
 
     // ---- Based on Plan ----
     @ApiProperty({
@@ -169,20 +162,20 @@ export class JournalRequestDto {
     // ---- Relations ----
     @ApiProperty({
         description: 'Foreign key referencing PairEntity',
-        example: 1,
-        type: Number,
+        example: '550e8400-e29b-41d4-a716-446655440000',
     })
     @IsNotEmpty()
-    @IsNumber()
-    pairId: number;
+    pairId: string;
 
     @ApiPropertyOptional({
         description: 'Foreign key referencing StrategyEntity',
-        example: 2,
-        type: Number,
+        example: '550e8400-e29b-41d4-a716-446655440000',
         nullable: true,
     })
     @IsOptional()
-    @IsNumber()
-    strategyId?: number | null;
+    strategyId?: string;
 }
+
+export class CreateJournalRequestDto extends JournalRequestDto {}
+
+export class UpdateJournalRequestDto extends PartialType(JournalRequestDto) {}

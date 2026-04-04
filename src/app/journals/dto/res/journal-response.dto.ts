@@ -35,35 +35,34 @@ export class JournalResponseDto {
     @Expose()
     entryTime: string;
 
-    @ApiPropertyOptional({ description: 'Closing price of the trade', example: 1.24, nullable: true })
+    @ApiPropertyOptional({ description: 'Closing price of the trade', example: 1.24 })
     @Expose()
-    closingPrice: number | null;
+    closingPrice: number;
 
-    @ApiPropertyOptional({ description: 'Time when the trade was closed', example: '10:45:00', nullable: true })
+    @ApiPropertyOptional({ description: 'Time when the trade was closed', example: '10:45:00' })
     @Expose()
-    closingTime: string | null;
+    closingTime: string;
 
-    @ApiPropertyOptional({ description: 'Take Profit level', example: 1.25, nullable: true })
+    @ApiPropertyOptional({ description: 'Take Profit level', example: 1.25 })
     @Expose()
-    takeProfit: number | null;
+    takeProfit: number;
 
-    @ApiPropertyOptional({ description: 'Stop Loss level', example: 1.23, nullable: true })
+    @ApiPropertyOptional({ description: 'Stop Loss level', example: 1.23 })
     @Expose()
-    stopLoss: number | null;
+    stopLoss: number;
 
     @ApiPropertyOptional({
         description: 'Profit and Loss value in cent currency format',
         example: 55.0,
-        nullable: true,
     })
     @Expose()
-    profitAndLoss: number | null;
+    profitAndLoss: number;
 
-    @ApiPropertyOptional({ description: 'Risk ratio of the trade', example: 1.5, nullable: true })
+    @ApiPropertyOptional({ description: 'Risk ratio of the trade', example: 1.5 })
     @Expose()
     riskRatio: number | null;
 
-    @ApiPropertyOptional({ description: 'Reward ratio of the trade', example: 2.5, nullable: true })
+    @ApiPropertyOptional({ description: 'Reward ratio of the trade', example: 2.5 })
     @Expose()
     rewardRatio: number | null;
 
@@ -80,6 +79,7 @@ export class JournalResponseDto {
     note: string | null;
 
     @ApiProperty({ description: 'Pair associated with this trade', example: PairResponseDto })
+    @Expose()
     pair: PairResponseDto;
 
     @ApiPropertyOptional({
@@ -87,11 +87,14 @@ export class JournalResponseDto {
         example: StrategiesResponseDto,
         nullable: true,
     })
+    @Expose()
     strategy: StrategiesResponseDto;
 
     @ApiProperty({ description: 'Record creation timestamp', example: '2025-01-15T08:30:00.000Z' })
+    @Expose()
     createdAt: Date;
 
     @ApiProperty({ description: 'Record last update timestamp', example: '2025-01-15T10:45:00.000Z' })
+    @Expose()
     updatedAt: Date;
 }
