@@ -29,4 +29,17 @@ export class StrategiesService {
             throw error;
         }
     }
+
+    async findAll(): Promise<StrategiesResponseDto[]> {
+        const context = `${StrategiesService.name}.findAll`;
+        try {
+            const strategies = await this.strategyRepository.find();
+            return strategies.map(strategy => mapToDto(StrategiesResponseDto, strategy));
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error(`Error fetching strategies: ${errorMessage}`, context, errorStack);
+            throw error;
+        }
+    }
 }
