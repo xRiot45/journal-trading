@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { StrategiesService } from './strategies.service';
 import { StrategiesRequestDto } from './dto/req/strategies-request.dto';
@@ -42,10 +42,9 @@ export class StrategiesController {
         summary: 'Get all strategies',
         description: 'Get all strategies trading',
         auth: true,
-        response: StrategiesResponseDto,
+        response: [StrategiesResponseDto],
         status: HttpStatus.OK,
         consumes: 'application/json',
-        produces: 'application/json',
     })
     async findAll(): Promise<BaseResponseDto<StrategiesResponseDto[]>> {
         const result = await this.strategiesService.findAll();
@@ -54,6 +53,28 @@ export class StrategiesController {
             statusCode: HttpStatus.OK,
             timestamp: new Date(),
             message: 'Strategies fetched successfully',
+            data: result,
+        };
+    }
+
+    @Get(':strategyId')
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Get a strategy',
+        description: 'Get a strategy trading',
+        auth: true,
+        response: StrategiesResponseDto,
+        status: HttpStatus.OK,
+        consumes: 'application/json',
+        params: [{ name: 'strategyId', description: 'The id of the strategy trading' }],
+    })
+    async findOne(@Param('strategyId') strategyId: string): Promise<BaseResponseDto<StrategiesResponseDto>> {
+        const result = await this.strategiesService.findOne(strategyId);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Strategy fetched successfully',
             data: result,
         };
     }

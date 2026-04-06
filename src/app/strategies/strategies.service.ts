@@ -42,4 +42,19 @@ export class StrategiesService {
             throw error;
         }
     }
+
+    async findOne(strategyId: string): Promise<StrategiesResponseDto> {
+        const context = `${StrategiesService.name}.findOne`;
+        try {
+            const strategy = await this.strategyRepository.findOne({
+                where: { id: strategyId },
+            });
+            return mapToDto(StrategiesResponseDto, strategy);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            const errorStack = error instanceof Error ? error.stack : undefined;
+            this.logger.error(`Error fetching strategy: ${errorMessage}`, context, errorStack);
+            throw error;
+        }
+    }
 }
