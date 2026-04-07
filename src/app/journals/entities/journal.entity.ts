@@ -88,18 +88,14 @@ export class JournalEntity extends BaseEntity {
     profitAndLoss: number;
 
     @Column({
-        type: 'decimal',
-        precision: 10,
-        scale: 2,
+        type: 'float',
         nullable: false,
         comment: 'Risk ratio of the trade',
     })
     riskRatio: number;
 
     @Column({
-        type: 'decimal',
-        precision: 10,
-        scale: 2,
+        type: 'float',
         nullable: false,
         comment: 'Reward ratio of the trade',
     })
