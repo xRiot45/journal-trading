@@ -7,6 +7,7 @@ import { ElementsModule } from './elements/elements.module';
 import { TradingPlansModule } from './trading-plans/trading-plans.module';
 import { StrategiesModule } from './strategies/strategies.module';
 import { JournalsModule } from './journals/journals.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { JournalsModule } from './journals/journals.module';
         ElementsModule,
         TradingPlansModule,
         JournalsModule,
+        CalendarModule,
     ],
     exports: [],
     controllers: [],

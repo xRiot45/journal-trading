@@ -19,8 +19,6 @@ import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
 import { JournalResponseDto } from './dto/res/journal-response.dto';
 import { ApiDocGenericResponse } from 'src/common/decorators/api-doc.decorator';
 import { PaginationQueryDto } from 'src/shared/dto/pagination.dto';
-import { CalendarResponseDto } from './dto/res/calendar-response.dto';
-import { GetCalendarDto } from './dto/req/get-calendar.dto';
 
 @ApiTags('Journals')
 @UseGuards(JwtAuthGuard)
@@ -77,31 +75,6 @@ export class JournalsController {
             message: 'Journals fetched successfully',
             data: result.data,
             meta: result.meta,
-        };
-    }
-
-    @Get('calendar')
-    @HttpCode(HttpStatus.OK)
-    @ApiDocGenericResponse({
-        summary: 'Get Calendar',
-        description: 'Get Calendar',
-        auth: true,
-        response: CalendarResponseDto,
-        status: HttpStatus.OK,
-        produces: 'application/json',
-        queries: [
-            { name: 'month', type: 'number', required: true },
-            { name: 'year', type: 'number', required: true },
-        ],
-    })
-    async getCalendar(@Query() query: GetCalendarDto): Promise<BaseResponseDto<CalendarResponseDto>> {
-        const result = await this.journalsService.getCalendar(query.month, query.year);
-        return {
-            success: true,
-            statusCode: HttpStatus.OK,
-            timestamp: new Date(),
-            message: 'Calendar fetched successfully',
-            data: result,
         };
     }
 
