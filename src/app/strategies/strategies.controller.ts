@@ -13,11 +13,12 @@ import { ApiTags } from '@nestjs/swagger';
 export class StrategiesController {
     constructor(private readonly strategiesService: StrategiesService) {}
 
+    // ── DOCUMENT CRUD ──────────────────────────────────────────────────────────
+
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @ApiDocGenericResponse({
-        summary: 'Create a new strategy',
-        description: 'Create a new strategy trading',
+        summary: 'Create a new strategy (canvas)',
         auth: true,
         body: StrategiesRequestDto,
         response: StrategiesResponseDto,
@@ -40,11 +41,10 @@ export class StrategiesController {
     @HttpCode(HttpStatus.OK)
     @ApiDocGenericResponse({
         summary: 'Get all strategies',
-        description: 'Get all strategies trading',
         auth: true,
-        response: [StrategiesResponseDto],
+        response: StrategiesResponseDto,
         status: HttpStatus.OK,
-        consumes: 'application/json',
+        produces: 'application/json',
     })
     async findAll(): Promise<BaseResponseDto<StrategiesResponseDto[]>> {
         const result = await this.strategiesService.findAll();
@@ -60,13 +60,12 @@ export class StrategiesController {
     @Get(':strategyId')
     @HttpCode(HttpStatus.OK)
     @ApiDocGenericResponse({
-        summary: 'Get a strategy',
-        description: 'Get a strategy trading',
+        summary: 'Get a strategy by ID',
         auth: true,
         response: StrategiesResponseDto,
         status: HttpStatus.OK,
-        consumes: 'application/json',
-        params: [{ name: 'strategyId', description: 'The id of the strategy trading' }],
+        produces: 'application/json',
+        params: [{ name: 'strategyId', description: 'Strategy ID' }],
     })
     async findOne(@Param('strategyId') strategyId: string): Promise<BaseResponseDto<StrategiesResponseDto>> {
         const result = await this.strategiesService.findOne(strategyId);

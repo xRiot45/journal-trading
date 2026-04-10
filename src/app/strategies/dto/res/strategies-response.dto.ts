@@ -1,35 +1,106 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose, Type } from 'class-transformer';
+import { CanvasBackground } from '../../entities/strategy.entity';
+import { HistoryActionType } from '../../entities/canvas-history.entity';
 
-export class StrategiesResponseDto {
-    @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000', description: 'The id of the strategy trading' })
+export class ViewportDto {
+    @ApiProperty({ example: -240.5 })
+    @Expose()
+    viewportX: number;
+
+    @ApiProperty({ example: -120.0 })
+    @Expose()
+    viewportY: number;
+
+    @ApiProperty({ example: 1.25 })
+    @Expose()
+    zoom: number;
+}
+
+export class CanvasSettingsDto {
+    @ApiProperty({ enum: CanvasBackground, example: CanvasBackground.DOTS })
+    @Expose()
+    background: CanvasBackground;
+
+    @ApiProperty({ example: '#ffffff' })
+    @Expose()
+    backgroundColor: string;
+
+    @ApiProperty({ example: true })
+    @Expose()
+    snapToGrid: boolean;
+
+    @ApiProperty({ example: 20 })
+    @Expose()
+    gridSize: number;
+}
+
+export class CanvasHistoryItemDto {
+    @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
     @Expose()
     id: string;
 
-    @ApiProperty({ example: 'Sample Strategy trading', description: 'The title of the strategy' })
+    @ApiProperty({ enum: HistoryActionType })
+    @Expose()
+    actionType: HistoryActionType;
+
+    @ApiPropertyOptional({ nullable: true })
+    @Expose()
+    label: string | null;
+
+    @ApiProperty({ example: 3 })
+    @Expose()
+    stackIndex: number;
+
+    @ApiProperty()
+    @Expose()
+    createdAt: Date;
+}
+
+export class StrategiesResponseDto {
+    @ApiProperty()
+    @Expose()
+    id: string;
+
+    @ApiProperty({ example: 'My Strategy' })
     @Expose()
     title: string;
 
-    @ApiProperty({ example: 'This is a sample content of the strategy', description: 'The content of the strategy' })
+    @ApiPropertyOptional({ nullable: true })
     @Expose()
     content: string | null;
 
-    @ApiProperty({
-        example: 'This is a sample description of the strategy',
-        description: 'The description of the strategy',
-    })
+    @ApiPropertyOptional({ nullable: true })
     @Expose()
     description: string | null;
 
-    @ApiProperty({ example: '2022-01-01', description: 'The lastEditedAt of the document' })
+    @ApiPropertyOptional({ nullable: true })
     @Expose()
     lastEditedAt: Date;
 
-    @ApiProperty({ example: '2023-08-01T00:00:00.000Z', description: 'The createdAt of the document' })
+    @ApiProperty({ type: () => ViewportDto })
+    @Expose()
+    @Type(() => ViewportDto)
+    viewport: ViewportDto;
+
+    @ApiProperty({ type: () => CanvasSettingsDto })
+    @Expose()
+    @Type(() => CanvasSettingsDto)
+    canvasSettings: CanvasSettingsDto;
+
+    @ApiProperty()
     @Expose()
     createdAt: Date;
 
-    @ApiProperty({ example: '2023-08-01T00:00:00.000Z', description: 'The updatedAt of the document' })
+    @ApiProperty()
     @Expose()
     updatedAt: Date;
+}
+
+export class RestoreSnapshotResultDto {
+    @ApiProperty()
+    restoredFromId: string;
+
+    @ApiProperty()
+    elementCount: number;
 }

@@ -9,8 +9,8 @@ export enum ElementType {
 
 @Entity('elements')
 export class ElementEntity extends BaseEntity {
-    @Column({ name: 'document_id' })
-    documentId: string;
+    @Column({ name: 'strategyId' })
+    strategyId: string;
 
     @Column({ type: 'enum', enum: ElementType })
     type: ElementType;
@@ -21,40 +21,38 @@ export class ElementEntity extends BaseEntity {
     @Column({ type: 'float', default: 0 })
     y: number;
 
-    @Column({ type: 'float', default: 100 })
+    @Column({ type: 'float', default: 160 })
     width: number;
 
-    @Column({ type: 'float', default: 100 })
+    @Column({ type: 'float', default: 60 })
     height: number;
 
-    @Column({ name: 'z_index', type: 'int', default: 0 })
+    @Column({ name: 'zIndex', type: 'int', default: 0 })
     zIndex: number;
 
-    // Styling: color, fill, stroke, fontSize, opacity, dll
-    @Column({ name: 'style_data', type: 'json', nullable: true })
-    styleData: Record<string, any>;
+    @Column({ name: 'styleData', type: 'json', nullable: true })
+    styleData: Record<string, unknown> | null;
 
-    // Konten: label teks node, source/target untuk edge, dll
-    @Column({ name: 'content_data', type: 'json', nullable: true })
-    contentData: Record<string, any>;
+    @Column({ name: 'contentData', type: 'json', nullable: true })
+    contentData: Record<string, unknown> | null;
 
-    // Self-referencing untuk parent node mind map
-    @Column({ name: 'parent_element_id', nullable: true })
-    parentElementId: string;
+    @Column({ name: 'parentElementId', nullable: true })
+    parentElementId: string | null;
 
-    @Column({ name: 'is_locked', default: false })
+    @Column({ name: 'isLocked', default: false })
     isLocked: boolean;
 
-    @Column({ name: 'is_visible', default: true })
+    @Column({ name: 'isVisible', default: true })
     isVisible: boolean;
 
-    // Relations
+    // ---- Relations ----
+
     @ManyToOne(() => StrategyEntity, d => d.elements, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'document_id' })
+    @JoinColumn({ name: 'strategyId' })
     strategy: StrategyEntity;
 
-    @ManyToOne(() => ElementEntity, e => e.children, { nullable: true })
-    @JoinColumn({ name: 'parent_element_id' })
+    @ManyToOne(() => ElementEntity, e => e.children, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'parentElementId' })
     parent: ElementEntity;
 
     @OneToMany(() => ElementEntity, e => e.parent)
