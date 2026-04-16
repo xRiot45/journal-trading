@@ -7,7 +7,7 @@ import { StrategiesService } from '../strategies/strategies.service';
 import { LoggerService } from 'src/core/logger/logger.service';
 import { CreateElementDto } from './dto/req/create-element.dto';
 import { ElementResponseDto } from './dto/res/element-response.dto';
-import { BulkUpdateItemDto } from './dto/req/update-element.dto';
+import { BulkUpdateItemDto, UpdateElementDto } from './dto/req/update-element.dto';
 import { HistoryActionType } from '../strategies/entities/canvas-history.entity';
 import { plainToInstance } from 'class-transformer';
 
@@ -89,6 +89,65 @@ export class ElementsService {
             order: { zIndex: 'ASC', createdAt: 'ASC' },
         });
         return elements.map(el => plainToInstance(ElementResponseDto, el, { excludeExtraneousValues: true }));
+    }
+
+    async updateElementStrategy(
+        elementId: string,
+        strategyId: string,
+        dto: UpdateElementDto,
+    ): Promise<ElementResponseDto> {
+        const context = `${ElementsService.name}.updateElementStrategy`;
+
+        const strategy = await this.strategyRepository.findOne({
+            where: { id: strategyId },
+        });
+
+        if (!strategy) {
+            this.logger.error(`Strategy (canvas) with id ${strategyId} not found`, context);
+            throw new NotFoundException(`Strategy (canvas) with id ${strategyId} not found`);
+        }
+
+        const element = await this.elementRepository.findOne({
+            where: {
+                id: elementId,
+                strategyId,
+            },
+        });
+
+        if (!element) {
+            throw new NotFoundException(`Element with id ${elementId} not found`);
+        }
+
+        if (dto.parentElementId) {
+            const parent = await this.elementRepository.findOne({
+                where: {
+                    id: dto.parentElementId,
+                    strategyId,
+                },
+            });
+
+            if (!parent) {
+                throw new NotFoundException(`Parent element with id ${dto.parentElementId} not found in this strategy`);
+            }
+
+            // Optional: cegah self-parenting
+            if (dto.parentElementId === elementId) {
+                throw new BadRequestException(`Element cannot be its own parent`);
+            }
+        }
+
+        // 4. Merge update (hanya field yang dikirim)
+        const updatedElement = this.elementRepository.merge(element, {
+            ...dto,
+        });
+
+        // 5. Save ke database
+        const saved = await this.elementRepository.save(updatedElement);
+
+        // 6. Mapping ke response DTO
+        return plainToInstance(ElementResponseDto, saved, {
+            excludeExtraneousValues: true,
+        });
     }
 
     // ── PRIVATE HELPERS ────────────────────────────────────────────────────────

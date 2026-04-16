@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ElementsService } from './elements.service';
 import { ApiDocGenericResponse } from 'src/common/decorators/api-doc.decorator';
 import { CreateElementDto } from './dto/req/create-element.dto';
@@ -6,6 +6,7 @@ import { ElementResponseDto } from './dto/res/element-response.dto';
 import { BaseResponseDto } from 'src/shared/dto/base-response.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { UpdateElementDto } from './dto/req/update-element.dto';
 
 @ApiTags('Elements')
 @Controller('elements')
@@ -64,6 +65,45 @@ export class ElementsController {
             statusCode: HttpStatus.OK,
             timestamp: new Date(),
             message: 'Elements retrieved successfully',
+            data: result,
+        };
+    }
+
+    @Patch(':elementId/strategy/:strategyId')
+    @HttpCode(HttpStatus.OK)
+    @ApiDocGenericResponse({
+        summary: 'Update strategy for an element',
+        description: 'Updates the strategy associated with the specified element.',
+        auth: true,
+        response: ElementResponseDto,
+        status: HttpStatus.OK,
+        produces: 'application/json',
+        params: [
+            {
+                name: 'elementId',
+                description: 'ID of the element to update',
+                required: true,
+                type: 'string',
+            },
+            {
+                name: 'strategyId',
+                description: 'ID of the strategy to associate with the element',
+                required: true,
+                type: 'string',
+            },
+        ],
+    })
+    async updateElementStrategy(
+        @Param('elementId') elementId: string,
+        @Param('strategyId') strategyId: string,
+        @Body() dto: UpdateElementDto,
+    ): Promise<BaseResponseDto<ElementResponseDto>> {
+        const result = await this.elementsService.updateElementStrategy(elementId, strategyId, dto);
+        return {
+            success: true,
+            statusCode: HttpStatus.OK,
+            timestamp: new Date(),
+            message: 'Element strategy updated successfully',
             data: result,
         };
     }
