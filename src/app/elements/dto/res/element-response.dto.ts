@@ -11,6 +11,10 @@ export class ElementResponseDto {
     @Expose()
     strategyId: string;
 
+    @ApiProperty()
+    @Expose()
+    identifier: string;
+
     @ApiProperty({ enum: ElementType })
     @Expose()
     type: ElementType;
@@ -34,14 +38,6 @@ export class ElementResponseDto {
     @ApiProperty()
     @Expose()
     zIndex: number;
-
-    @ApiPropertyOptional({ nullable: true })
-    @Expose()
-    styleData: Record<string, unknown> | null;
-
-    @ApiPropertyOptional({ nullable: true })
-    @Expose()
-    contentData: Record<string, unknown> | null;
 
     @ApiPropertyOptional({ nullable: true })
     @Expose()

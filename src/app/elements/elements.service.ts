@@ -83,6 +83,14 @@ export class ElementsService {
         });
     }
 
+    async getElementsByStrategy(strategyId: string): Promise<ElementResponseDto[]> {
+        const elements = await this.elementRepository.find({
+            where: { strategyId },
+            order: { zIndex: 'ASC', createdAt: 'ASC' },
+        });
+        return elements.map(el => plainToInstance(ElementResponseDto, el, { excludeExtraneousValues: true }));
+    }
+
     // ── PRIVATE HELPERS ────────────────────────────────────────────────────────
 
     private async findElementOrFail(id: string): Promise<ElementEntity> {
