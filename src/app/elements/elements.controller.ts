@@ -13,29 +13,6 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 export class ElementsController {
     constructor(private readonly elementsService: ElementsService) {}
 
-    // @Post()
-    // @HttpCode(HttpStatus.CREATED)
-    // @ApiDocGenericResponse({
-    //     summary: 'Create a new element (node or edge)',
-    //     description: 'For EDGE, contentData must include sourceId and targetId.',
-    //     auth: true,
-    //     body: CreateElementDto,
-    //     response: ElementResponseDto,
-    //     status: HttpStatus.CREATED,
-    //     consumes: 'application/json',
-    //     produces: 'application/json',
-    // })
-    // async create(@Body() dto: CreateElementDto): Promise<BaseResponseDto<ElementResponseDto>> {
-    //     const result = await this.elementsService.createElement(dto);
-    //     return {
-    //         success: true,
-    //         statusCode: HttpStatus.CREATED,
-    //         timestamp: new Date(),
-    //         message: 'Element created successfully',
-    //         data: result,
-    //     };
-    // }
-
     @Get(':strategyId')
     @HttpCode(HttpStatus.OK)
     @ApiDocGenericResponse({
@@ -54,10 +31,10 @@ export class ElementsController {
             },
         ],
     })
-    async getElementsByStrategy(
+    async getAllElementsByStrategyID(
         @Param('strategyId') strategyId: string,
     ): Promise<BaseResponseDto<ElementResponseDto[]>> {
-        const result = await this.elementsService.getElementsByStrategy(strategyId);
+        const result = await this.elementsService.getAllElementsByStrategyID(strategyId);
         return {
             success: true,
             statusCode: HttpStatus.OK,
@@ -66,45 +43,6 @@ export class ElementsController {
             data: result,
         };
     }
-
-    // @Patch(':elementId/strategy/:strategyId')
-    // @HttpCode(HttpStatus.OK)
-    // @ApiDocGenericResponse({
-    //     summary: 'Update strategy for an element',
-    //     description: 'Updates the strategy associated with the specified element.',
-    //     auth: true,
-    //     response: ElementResponseDto,
-    //     status: HttpStatus.OK,
-    //     produces: 'application/json',
-    //     params: [
-    //         {
-    //             name: 'elementId',
-    //             description: 'ID of the element to update',
-    //             required: true,
-    //             type: 'string',
-    //         },
-    //         {
-    //             name: 'strategyId',
-    //             description: 'ID of the strategy to associate with the element',
-    //             required: true,
-    //             type: 'string',
-    //         },
-    //     ],
-    // })
-    // async updateElementStrategy(
-    //     @Param('elementId') elementId: string,
-    //     @Param('strategyId') strategyId: string,
-    //     @Body() dto: UpdateElementDto,
-    // ): Promise<BaseResponseDto<ElementResponseDto>> {
-    //     const result = await this.elementsService.updateElementStrategy(elementId, strategyId, dto);
-    //     return {
-    //         success: true,
-    //         statusCode: HttpStatus.OK,
-    //         timestamp: new Date(),
-    //         message: 'Element strategy updated successfully',
-    //         data: result,
-    //     };
-    // }
 
     @Put()
     @HttpCode(HttpStatus.OK)

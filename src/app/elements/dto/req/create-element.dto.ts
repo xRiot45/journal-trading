@@ -66,11 +66,4 @@ export class UpsertElementDto extends PartialType(CreateElementDto) {
     @IsOptional()
     @IsUUID()
     id?: string;
-
-    /**
-     * Catatan: Karena kita mewarisi dari PartialType(CreateElementDto),
-     * semua property seperti strategyId, type, dan identifier sekarang menjadi opsional.
-     * * Namun, untuk Upsert, 'strategyId' biasanya tetap diperlukan agar backend tahu
-     * di canvas mana elemen ini berada/dibuat.
-     */
 }
