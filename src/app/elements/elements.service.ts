@@ -5,9 +5,9 @@ import { StrategyEntity } from '../strategies/entities/strategy.entity';
 import { Repository, DataSource } from 'typeorm';
 import { StrategiesService } from '../strategies/strategies.service';
 import { LoggerService } from 'src/core/logger/logger.service';
-import { CreateElementDto } from './dto/req/create-element.dto';
+import { UpsertElementDto } from './dto/req/create-element.dto';
 import { ElementResponseDto } from './dto/res/element-response.dto';
-import { BulkUpdateItemDto, UpdateElementDto } from './dto/req/update-element.dto';
+import { BulkUpdateItemDto } from './dto/req/update-element.dto';
 import { HistoryActionType } from '../strategies/entities/canvas-history.entity';
 import { plainToInstance } from 'class-transformer';
 
@@ -23,65 +23,65 @@ export class ElementsService {
         private readonly logger: LoggerService,
     ) {}
 
-    async createElement(dto: CreateElementDto): Promise<ElementResponseDto> {
-        const context = `${ElementsService.name}.createElement`;
+    // async createElement(dto: CreateElementDto): Promise<ElementResponseDto> {
+    //     const context = `${ElementsService.name}.createElement`;
 
-        // 1. Validasi  Strategy
-        const strategy = await this.strategyRepository.findOne({
-            where: {
-                id: dto.strategyId,
-            },
-        });
+    //     // 1. Validasi  Strategy
+    //     const strategy = await this.strategyRepository.findOne({
+    //         where: {
+    //             id: dto.strategyId,
+    //         },
+    //     });
 
-        if (!strategy) {
-            throw new NotFoundException(`Strategy (canvas) with id ${dto.strategyId} not found`);
-        }
+    //     if (!strategy) {
+    //         throw new NotFoundException(`Strategy (canvas) with id ${dto.strategyId} not found`);
+    //     }
 
-        // 2. Validasi Parent jika ada
-        if (dto.parentElementId) {
-            const parent = await this.elementRepository.findOne({
-                where: { id: dto.parentElementId, strategyId: dto.strategyId, type: ElementType.NODE },
-            });
+    //     // 2. Validasi Parent jika ada
+    //     if (dto.parentElementId) {
+    //         const parent = await this.elementRepository.findOne({
+    //             where: { id: dto.parentElementId, strategyId: dto.strategyId, type: ElementType.NODE },
+    //         });
 
-            if (!parent) {
-                throw new BadRequestException(`Parent node ${dto.parentElementId} not found in this canvas`);
-            }
-        }
+    //         if (!parent) {
+    //             throw new BadRequestException(`Parent node ${dto.parentElementId} not found in this canvas`);
+    //         }
+    //     }
 
-        // 3. Snapshot sebelum create (untuk Undo/Redo)
-        await this.strategiesService.pushSnapshot(
-            dto.strategyId,
-            HistoryActionType.CREATE_ELEMENT,
-            `Create element: ${dto.identifier}`,
-        );
+    //     // 3. Snapshot sebelum create (untuk Undo/Redo)
+    //     await this.strategiesService.pushSnapshot(
+    //         dto.strategyId,
+    //         HistoryActionType.CREATE_ELEMENT,
+    //         `Create element: ${dto.identifier}`,
+    //     );
 
-        // 4. Mapping DTO ke Entity
-        const element = this.elementRepository.create({
-            strategyId: dto.strategyId,
-            identifier: dto.identifier,
-            type: dto.type,
-            x: dto.x ?? 0,
-            y: dto.y ?? 0,
-            width: dto.width ?? 160,
-            height: dto.height ?? 60,
-            zIndex: dto.zIndex ?? 0,
-            parentElementId: dto.parentElementId ?? null,
-            isLocked: dto.isLocked ?? false,
-            isVisible: dto.isVisible ?? true,
-        });
+    //     // 4. Mapping DTO ke Entity
+    //     const element = this.elementRepository.create({
+    //         strategyId: dto.strategyId,
+    //         identifier: dto.identifier,
+    //         type: dto.type,
+    //         x: dto.x ?? 0,
+    //         y: dto.y ?? 0,
+    //         width: dto.width ?? 160,
+    //         height: dto.height ?? 60,
+    //         zIndex: dto.zIndex ?? 0,
+    //         parentElementId: dto.parentElementId ?? null,
+    //         isLocked: dto.isLocked ?? false,
+    //         isVisible: dto.isVisible ?? true,
+    //     });
 
-        const saved = await this.elementRepository.save(element);
+    //     const saved = await this.elementRepository.save(element);
 
-        // 5. Update timestamp strategy
-        await this.strategyRepository.update(dto.strategyId, {
-            lastEditedAt: new Date(),
-        });
+    //     // 5. Update timestamp strategy
+    //     await this.strategyRepository.update(dto.strategyId, {
+    //         lastEditedAt: new Date(),
+    //     });
 
-        this.logger.log(`Created element ${saved.id} (${saved.type}) in strategy ${dto.strategyId}`, context);
-        return plainToInstance(ElementResponseDto, saved, {
-            excludeExtraneousValues: true,
-        });
-    }
+    //     this.logger.log(`Created element ${saved.id} (${saved.type}) in strategy ${dto.strategyId}`, context);
+    //     return plainToInstance(ElementResponseDto, saved, {
+    //         excludeExtraneousValues: true,
+    //     });
+    // }
 
     async getElementsByStrategy(strategyId: string): Promise<ElementResponseDto[]> {
         const elements = await this.elementRepository.find({
@@ -91,60 +91,119 @@ export class ElementsService {
         return elements.map(el => plainToInstance(ElementResponseDto, el, { excludeExtraneousValues: true }));
     }
 
-    async updateElementStrategy(
-        elementId: string,
-        strategyId: string,
-        dto: UpdateElementDto,
-    ): Promise<ElementResponseDto> {
-        const context = `${ElementsService.name}.updateElementStrategy`;
+    // async updateElementStrategy(
+    //     elementId: string,
+    //     strategyId: string,
+    //     dto: UpdateElementDto,
+    // ): Promise<ElementResponseDto> {
+    //     const context = `${ElementsService.name}.updateElementStrategy`;
 
-        const strategy = await this.strategyRepository.findOne({
-            where: { id: strategyId },
-        });
+    //     const strategy = await this.strategyRepository.findOne({
+    //         where: { id: strategyId },
+    //     });
 
+    //     if (!strategy) {
+    //         this.logger.error(`Strategy (canvas) with id ${strategyId} not found`, context);
+    //         throw new NotFoundException(`Strategy (canvas) with id ${strategyId} not found`);
+    //     }
+
+    //     const element = await this.elementRepository.findOne({
+    //         where: {
+    //             id: elementId,
+    //             strategyId,
+    //         },
+    //     });
+
+    //     if (!element) {
+    //         throw new NotFoundException(`Element with id ${elementId} not found`);
+    //     }
+
+    //     if (dto.parentElementId) {
+    //         const parent = await this.elementRepository.findOne({
+    //             where: {
+    //                 id: dto.parentElementId,
+    //                 strategyId,
+    //             },
+    //         });
+
+    //         if (!parent) {
+    //             throw new NotFoundException(`Parent element with id ${dto.parentElementId} not found in this strategy`);
+    //         }
+
+    //         // Optional: cegah self-parenting
+    //         if (dto.parentElementId === elementId) {
+    //             throw new BadRequestException(`Element cannot be its own parent`);
+    //         }
+    //     }
+
+    //     // 4. Merge update (hanya field yang dikirim)
+    //     const updatedElement = this.elementRepository.merge(element, {
+    //         ...dto,
+    //     });
+
+    //     // 5. Save ke database
+    //     const saved = await this.elementRepository.save(updatedElement);
+
+    //     // 6. Mapping ke response DTO
+    //     return plainToInstance(ElementResponseDto, saved, {
+    //         excludeExtraneousValues: true,
+    //     });
+    // }
+
+    async upsertElement(dto: UpsertElementDto): Promise<ElementResponseDto> {
+        const context = `${ElementsService.name}.upsertElement`;
+        const { id, strategyId, parentElementId } = dto;
+
+        // 1. Validasi Strategy (Canvas)
+        const strategy = await this.strategyRepository.findOne({ where: { id: strategyId } });
         if (!strategy) {
-            this.logger.error(`Strategy (canvas) with id ${strategyId} not found`, context);
-            throw new NotFoundException(`Strategy (canvas) with id ${strategyId} not found`);
+            throw new NotFoundException(`Strategy with id ${strategyId} not found`);
         }
 
-        const element = await this.elementRepository.findOne({
-            where: {
-                id: elementId,
-                strategyId,
-            },
-        });
-
-        if (!element) {
-            throw new NotFoundException(`Element with id ${elementId} not found`);
-        }
-
-        if (dto.parentElementId) {
+        // 2. Validasi Parent (jika ada)
+        if (parentElementId) {
             const parent = await this.elementRepository.findOne({
-                where: {
-                    id: dto.parentElementId,
-                    strategyId,
-                },
+                where: { id: parentElementId, strategyId },
             });
-
-            if (!parent) {
-                throw new NotFoundException(`Parent element with id ${dto.parentElementId} not found in this strategy`);
-            }
-
-            // Optional: cegah self-parenting
-            if (dto.parentElementId === elementId) {
-                throw new BadRequestException(`Element cannot be its own parent`);
-            }
+            if (!parent) throw new BadRequestException(`Parent node ${parentElementId} not found`);
+            if (id && parentElementId === id) throw new BadRequestException(`Element cannot be its own parent`);
         }
 
-        // 4. Merge update (hanya field yang dikirim)
-        const updatedElement = this.elementRepository.merge(element, {
-            ...dto,
-        });
+        let element: ElementEntity | null;
 
-        // 5. Save ke database
-        const saved = await this.elementRepository.save(updatedElement);
+        if (id) {
+            // --- LOGIKA UPDATE ---
+            element = await this.elementRepository.findOne({ where: { id, strategyId } });
+            if (!element) throw new NotFoundException(`Element with id ${id} not found in this strategy`);
 
-        // 6. Mapping ke response DTO
+            // Merge data lama dengan data baru dari DTO
+            this.elementRepository.merge(element, dto);
+        } else {
+            // --- LOGIKA CREATE ---
+            // Simpan snapshot hanya saat create (atau sesuai kebijakan bisnis Anda)
+            await this.strategiesService.pushSnapshot(
+                strategyId,
+                HistoryActionType.CREATE_ELEMENT,
+                `Create element: ${dto.identifier}`,
+            );
+
+            element = this.elementRepository.create({
+                ...dto,
+                x: dto.x ?? 0,
+                y: dto.y ?? 0,
+                width: dto.width ?? 160,
+                height: dto.height ?? 60,
+            });
+        }
+
+        // 3. Save (TypeORM akan otomatis handle Insert atau Update berdasarkan keberadaan ID)
+        const saved = await this.elementRepository.save(element);
+
+        // 4. Update timestamp strategy
+        await this.strategyRepository.update(strategyId, { lastEditedAt: new Date() });
+
+        this.logger.log(`${id ? 'Updated' : 'Created'} element ${saved.id}`, context);
+
         return plainToInstance(ElementResponseDto, saved, {
             excludeExtraneousValues: true,
         });
